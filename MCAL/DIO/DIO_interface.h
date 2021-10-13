@@ -24,9 +24,16 @@
 #define NO_PULLUP  0
 #define PULLUP     1
 
+#define ALL_INPUT  0x00
+#define ALL_OUTPUT 0xFF
+
+#define ALL_LOW    0x00
+#define ALL_HIGH   0xFF
+
+
 void DIO_voidSetPinDirection (u8 Copy_u8PortName, u8 Copy_u8PinNumber, u8 Copy_u8PinState);
 void DIO_voidSetPinValue     (u8 Copy_u8PortName, u8 Copy_u8PinNumber, u8 Copy_u8PinValue);
-u8   DIO_u8GetPinvlaue       (u8 Copy_u8PortName, u8 Copy_u8PinNumber);
+u8   DIO_u8GetPinValue       (u8 Copy_u8PortName, u8 Copy_u8PinNumber);
 
 void DIO_voidSetPortDirection(u8 Copy_u8PortName, u8 Copy_u8PortState);
 void DIO_voidSetPortValue    (u8 Copy_u8PortName, u8 Copy_u8PortValue);
