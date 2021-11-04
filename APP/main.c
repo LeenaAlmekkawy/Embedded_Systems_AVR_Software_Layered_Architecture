@@ -4,157 +4,61 @@
 #include"../MCAL/DIO/DIO_interface.h"
 #include"../MCAL/EXTI/EXTI_interface.h"
 #include"../MCAL/GIE/GIE_interface.h"
+#include"../MCAL/ADC/ADC_interface.h"
 #include"../HAL/LCD/LCD_interface.h"
 #include"../HAL/KPD/KPD_interface.h"
 #include <util/delay.h>
 u8 Global_RedLedState=0;
 u8 Global_YellowLedState=0;
 u8 Global_GreenLedState=0;
-void Toggle_RedLed(void);
-void Toggle_YellowLed(void);
-void Toggle_GreenLed (void);
 
-u8 LEDon1[] = {
-	  0x01,
-	  0x02,
-	  0x04,
-	  0x04,
-	  0x02,
-	  0x01,
-	  0x01,
-	  0x00
-	};
-	u8 LEDon2[] = {
-			 0x10,
-			  0x08,
-			  0x04,
-			  0x04,
-			  0x08,
-			  0x10,
-			  0x10,
-			  0x00
-		};
-	u8 LEDoff1[] = {
-			 0x01,
-			  0x03,
-			  0x07,
-			  0x07,
-			  0x03,
-			  0x01,
-			  0x01,
-			  0x00
-		};
-		u8 LEDoff2[] = {
-				0x10,
-				  0x18,
-				  0x1C,
-				  0x1C,
-				  0x18,
-				  0x10,
-				  0x10,
-				  0x00
-			};
 void main(void)
-{
+{   DIO_voidSetPinDirection (PORTA, PIN0, INPUT);
+    DIO_voidSetPortDirection(PORTD, OUTPUT);
+ DIO_voidSetPinValue     (PORTA, PIN0, LOW);
 	LCD_voidInit();
-	LCD_voidSendString("GREEN YELLOW RED");
-
-	LCD_voidSendCustomCharacter(LEDon1,1, 1, 1 );
-	LCD_voidSendCustomCharacter(LEDon2,2, 1, 2 );
-
-	LCD_voidSendCustomCharacter(LEDon1,1, 1, 8 );
-  LCD_voidSendCustomCharacter(LEDon2,2, 1, 9 );
-
-  LCD_voidSendCustomCharacter(LEDon1,1, 1, 14 );
-    LCD_voidSendCustomCharacter(LEDon2,2, 1, 15 );
+	//LCD_voidSendString("0 LEDs are on");
+   ADC_voidInit();
 
 
 
-	DIO_voidSetPinDirection(PORTA,PIN0,OUTPUT);
-	DIO_voidSetPinDirection(PORTA,PIN1,OUTPUT);
-	DIO_voidSetPinDirection(PORTA,PIN2,OUTPUT);
 
-DIO_voidSetPinDirection(PORTD,PIN3,INPUT);
-DIO_voidSetPinDirection(PORTD,PIN2,INPUT);
-DIO_voidSetPinDirection(PORTB,PIN2,INPUT);
-
-DIO_voidSetPinValue(PORTD,PIN3,HIGH);
-DIO_voidSetPinValue(PORTD,PIN2,HIGH);
-DIO_voidSetPinValue(PORTB,PIN2,HIGH);
-	/*EXTI_voidSetInt0SenseControl(FALLING_EDGE);
-	EXTI_voidINT0Control(ENABLE );*/
-	GIE_voidEnableGlobalInterrupt();
-    EXTI_voidIntInit();
-
-EXTI_voidInt0SetCallBack(&Toggle_RedLed );
-EXTI_voidInt1SetCallBack(&Toggle_YellowLed);
-EXTI_voidInt2SetCallBack(&Toggle_GreenLed);
 
  while(1)
  {
+	 u32 digital;
+	   digital=ADC_voidStartConversionSynchronous(0);
+	   // LCD_voidWriteNumber(digital, 1,0);
+	    if(digital<140)
+	    {  LCD_voidClear();
+	    	 LCD_voidSendString("6 LEDs are on");
+	    	  DIO_voidSetSpecificPortValue (PORTD, 0b11011011);
+	    }
+	    else if(digital<160 && digital>150)
+	  	    {  LCD_voidClear();
+	  	    	 LCD_voidSendString("4 LEDs are on");
+	  	    	 DIO_voidSetSpecificPortValue (PORTD, 0b00011011);
+	  	    }
+	    else if(digital<170 && digital>160)
+	    	  	    {  LCD_voidClear();
+	    	  	    	 LCD_voidSendString("3 LEDs are on");
+	    	  	    	 DIO_voidSetSpecificPortValue (PORTD, 0b00001011);
+	    	  	    }
+	    else if(digital<182 && digital>170)
+	  	    	  	    {  LCD_voidClear();
+	  	    	  	    	 LCD_voidSendString("2 LEDs are on");
+	  	    	  	    	 DIO_voidSetSpecificPortValue (PORTD, 0b00000011);
+	  	    	  	    }
+	    else if(digital>183)
+	    	  	     {  LCD_voidClear();
+	    	  	    	  	   LCD_voidSendString("1 LED is on");
+	    	  	    	  	DIO_voidSetSpecificPortValue (PORTD, 0b00000001);
+	    	  	    	  }
+
+
+	_delay_ms(500);
 
  }
 
 }
-
-void Toggle_RedLed (void)
-{
-	 if(Global_RedLedState==0)
-	{    LCD_voidSendCustomCharacter(LEDoff1,3, 1, 14 );
-	       LCD_voidSendCustomCharacter(LEDoff2,4, 1, 15 );
-		DIO_voidSetPinValue(PORTA,PIN0,HIGH);
-		Global_RedLedState=1;
-
-	}
-	else if(Global_RedLedState==1)
-	{  LCD_voidSendCustomCharacter(LEDon1,1, 1, 14 );
-    LCD_voidSendCustomCharacter(LEDon2,2, 1, 15 );
-		DIO_voidSetPinValue(PORTA,PIN0,LOW);
-		Global_RedLedState=0;
-
-	}
-
-}
-void Toggle_YellowLed (void)
-{
-	 if(Global_YellowLedState==0)
-	{LCD_voidSendCustomCharacter(LEDoff1,3, 1, 8 );
-	  LCD_voidSendCustomCharacter(LEDoff2,4, 1, 9 );
-
-		DIO_voidSetPinValue(PORTA,PIN1,HIGH);
-		Global_YellowLedState=1;
-
-	}
-	else if(Global_YellowLedState==1)
-	{LCD_voidSendCustomCharacter(LEDon1,1, 1, 8 );
-	  LCD_voidSendCustomCharacter(LEDon2,2, 1, 9 );
-
-		DIO_voidSetPinValue(PORTA,PIN1,LOW);
-		Global_YellowLedState=0;
-
-	}
-
-}
-void Toggle_GreenLed (void)
-{
-	 if(Global_GreenLedState==0)
-	{LCD_voidSendCustomCharacter(LEDoff1,3, 1, 1 );
-	LCD_voidSendCustomCharacter(LEDoff2,4, 1, 2 );
-
-		DIO_voidSetPinValue(PORTA,PIN2,HIGH);
-		Global_GreenLedState=1;
-
-	}
-	else if(Global_GreenLedState==1)
-	{LCD_voidSendCustomCharacter(LEDon1,1, 1, 1 );
-	LCD_voidSendCustomCharacter(LEDon2,2, 1, 2 );
-
-		DIO_voidSetPinValue(PORTA,PIN2,LOW);
-		Global_GreenLedState=0;
-
-	}
-
-}
-
-
 
