@@ -12,18 +12,36 @@ void TIMERS_voidInit(void)
 {
 
 
-	/*set CTC Mode*/
-	CLR_BIT(TCCR0,TCCR0_WGM00);
+	/*set PWM Mode*/
+	SET_BIT(TCCR0,TCCR0_WGM00);
 	SET_BIT(TCCR0,TCCR0_WGM01);
 
 	//ENABLE compare interrupt
-	 SET_BIT(TIMSK,TIMSK_OCIE0);
+	// SET_BIT(TIMSK,TIMSK_OCIE0);
 
-
-//prescaler 8
+	 SET_BIT(TCCR0,TCCR0_COM01);
+	 CLR_BIT(TCCR0,TCCR0_COM00);
+   //Prescaler 8
 	 CLR_BIT(TCCR0,TCCR0_CS00);
 	 SET_BIT(TCCR0,TCCR0_CS01);
 	 CLR_BIT(TCCR0,TCCR0_CS02);
+
+	 //set CTC mode for timer 2
+	 CLR_BIT(TCCR2,TCCR2_WGM20);
+	 SET_BIT(TCCR2,TCCR2_WGM21);
+
+	 //disconnect OC2
+	 CLR_BIT(TCCR2,TCCR2_COM20);
+	 CLR_BIT(TCCR2,TCCR2_COM21);
+
+	 //Prescaler 8 for timer 2
+	 CLR_BIT(TCCR2,TCCR2_CS20);
+	 SET_BIT(TCCR2,TCCR2_CS21);
+	 CLR_BIT(TCCR2,TCCR2_CS22);
+
+
+
+
 
 
 
@@ -36,23 +54,22 @@ void TIMERS_voidTimer0SetCompareMatchValue(u8 Copy_u8CompareMatchValue)
 	OCR0=Copy_u8CompareMatchValue;
 }
 
+void TIMERS_voidTimer2SetCompareMatchValue(u8 Copy_u8CompareMatchValue)
+{
+	OCR2=Copy_u8CompareMatchValue;
+}
+
 void TIMERS_voidTimer0SetPreLoadValue(u8 Copy_u8PreLoadValue)
 {
 	TCNT0=Copy_u8PreLoadValue;
 }
 
-void Timer_voidCounter(void)
+void TIMERS_voidTimer2SetPreLoadValue(u8 Copy_u8PreLoadValue)
 {
-	static u16 Local_u16Counter=0;
-		Local_u16Counter++;
-	if(Local_u16Counter==Global_time)
-	{
-		Local_u16Counter=0;
-		Global_flag=1;
-		return ;
-	}
-
+	TCNT2=Copy_u8PreLoadValue;
 }
+
+
 
 void TIMERS_voidTimer0CTCSetCallBackFunction(void (*Copy_pvCTCFunction)(void))
 {
@@ -61,18 +78,22 @@ void TIMERS_voidTimer0CTCSetCallBackFunction(void (*Copy_pvCTCFunction)(void))
 
 
 
-
-
-void TIMERS_voidSetBusyWait(u16 Copy_u16Time_ms)
+void TIMERS_voidSetBusyWaitTimer2_ms(u32 Copy_u32Time_ms)
 {
-   Global_time=(10)*Copy_u16Time_ms;
-   while(Global_flag==0)
-   {
-  TIMERS_voidTimer0CTCSetCallBackFunction(&Timer_voidCounter);
-   }
+	TIMERS_voidTimer2SetCompareMatchValue(250);
+	for(u32 Local_counter1=1; Local_counter1<=Copy_u32Time_ms;Local_counter1++ )
+	{
+		for(u32 Local_counter2=1; Local_counter2<=4;Local_counter2++ )
+			{
+			   while(GET_BIT(TIFR,TIFR_OCF2)==0)
+			   {
+				   /*do nothing
+				     */
+			   }
+			   SET_BIT(TIFR,TIFR_OCF2);
 
-	  Global_flag=0;
-
+			}
+	}
 
 
 }
