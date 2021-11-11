@@ -10,19 +10,16 @@
 
 
 void main(void)
-{   DIO_voidSetPinDirection(PORTA,PIN0,OUTPUT);
-
-    TIMERS_voidTimer0SetCompareMatchValue(100);
-    TIMERS_voidInit();
-    GIE_voidEnableGlobalInterrupt();
-
+{  DIO_voidSetPinDirection(PORTA,PIN0,OUTPUT);
+TIMERS_voidInit();
     while(1)
     {
+    	DIO_voidSetPinValue(PORTA,PIN0,HIGH);
+    	TIMERS_voidSetBusyWaitTimer2_ms(500);
+    	DIO_voidSetPinValue(PORTA,PIN0,LOW);
+    	 TIMERS_voidSetBusyWaitTimer2_ms(500);
 
-         DIO_voidSetPinValue(PORTA,PIN0,HIGH);
-        TIMERS_voidSetBusyWait(1000);
-          DIO_voidSetPinValue(PORTA,PIN0,LOW);
-          TIMERS_voidSetBusyWait(1000);
+
 
 
 
