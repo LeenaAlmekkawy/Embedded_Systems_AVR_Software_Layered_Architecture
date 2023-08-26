@@ -155,6 +155,9 @@ void USART_TransmitData(u8 Copy_u8Data)
 	//wait until transmit data buffer in empty
 	 while(GET_BIT(UCSRA,UCSRA_UDRE)==0);
 
+	  //clear flag
+	 SET_BIT(UCSRA,UCSRA_UDRE);
+
 	/*copy the data to be transmitted to the UDR register*/
 	UDR = Copy_u8Data;
 
