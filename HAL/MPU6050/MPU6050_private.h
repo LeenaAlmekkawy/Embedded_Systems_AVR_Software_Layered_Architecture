@@ -1,6 +1,9 @@
 #ifndef MPU6050_PRIVATE_H
 #define MPU6050_PRIVATE_H
 
+
+#define COMPLEMENTARY_FILTER_DT          .01
+
 #define MPU6050_PWR_MGMT_1               0x6B  //controls the power mode and clock source.
 #define MPU6050_CONFIG                   0x1A  //configures the digital low-pass filter (DLPF) and the full-scale range of the gyroscope.
 #define MPU6050_GYRO_CONFIG              0x1B  //This register configures the full-scale range of the gyroscope.
@@ -9,7 +12,7 @@
 #define MPU6050_INT_STATUS               0x3A  // This register indicates which interrupts have been triggered.
 
 
-//(Addresses 0x3B-0x40):This register contains the raw temperature sensor data in two's complement format.
+//(Addresses 0x3B-0x40):This register contains the raw accelerometer sensor data in two's complement format.
 #define MPU6050_ACCEL_XOUT_H             0x3B
 #define MPU6050_ACCEL_XOUT_L             0x3C
 #define MPU6050_ACCEL_YOUT_H             0x3D
@@ -41,6 +44,9 @@
 #define ACCEL_4                          0x08
 #define ACCEL_8                          0x10
 #define ACCEL_16                         0x18
+
+
+
 
 
 

@@ -18,7 +18,8 @@
  *  ACCEL_16
  *
  */
-#define ACCEL_FULL_SCALE_RANGE       ACCEL_4
+#define ACCEL_FULL_SCALE_RANGE       ACCEL_8
+
 
 
 #endif
